@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <servers>
+        <server>
+            <id>security-test-repo</id>
+            <username>theuser</username>
+            <!-- thepassword -->
+            <password>{EObV8XZA4koHsufCpGMmjy1SlPt9D0aGjN6O+xq/Y+Q=}</password>
+            <configuration>
+                <httpHeaders>
+                    <property>
+                        <name>My-Auth-Token</name>
+                        <!-- theauthtoken -->
+                        <value>{nEJsVa63CW4HX22CWhj+xklNxrhtceGJC6B6pubztCw=}</value>
+                    </property>
+                </httpHeaders>
+            </configuration>
+        </server>
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>it-repo</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>local.central</id>
+                    <url>@localRepositoryUrl@</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>local.central</id>
+                    <url>@localRepositoryUrl@</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+</settings>

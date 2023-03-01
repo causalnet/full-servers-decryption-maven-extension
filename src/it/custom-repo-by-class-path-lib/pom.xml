@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>au.net.causal.maven.plugins.full-servers-decryption-maven-extension.it</groupId>
-    <artifactId>custom-repo</artifactId>
+    <artifactId>custom-repo-by-class-path-lib</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <name>Full Servers Decryption Extension Testing Project</name>

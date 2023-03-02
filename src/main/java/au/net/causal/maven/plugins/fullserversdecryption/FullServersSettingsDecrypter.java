@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Component(role = SettingsDecrypter.class)
 public class FullServersSettingsDecrypter extends DefaultSettingsDecrypter
@@ -35,16 +36,46 @@ public class FullServersSettingsDecrypter extends DefaultSettingsDecrypter
     public SettingsDecryptionResult decrypt(SettingsDecryptionRequest request)
     {
         SettingsDecryptionResult result =  super.decrypt(request);
-        //TODO ability to save back to original request server objects (opt-in)
-        performAdditionalDecryption(result);
+        //TODO proxies support
+        performAdditionalDecryption(result.getServers(), result.getProblems());
+
+        List<Server> requestServersToDecrypt = request.getServers().stream()
+                                                                   .filter(s -> readConfiguration(s).isPersistDecryptionInMemory())
+                                                                   .collect(Collectors.toList());
+        if (!requestServersToDecrypt.isEmpty())
+            performAdditionalDecryption(requestServersToDecrypt, result.getProblems());
+
+
         return result;
     }
 
-    private void performAdditionalDecryption(SettingsDecryptionResult result)
+    private ServerConfiguration readConfiguration(Server server)
     {
-        for (Server server : result.getServers())
+        ServerConfiguration config = new ServerConfiguration();
+
+        if (server.getConfiguration() instanceof Xpp3Dom)
         {
-            List<SettingsProblem> problems = result.getProblems();
+            Xpp3Dom serverConfigXml = (Xpp3Dom)server.getConfiguration();
+            Xpp3Dom fullServersConfigXml = serverConfigXml.getChild("fullServersDecryption");
+
+            //Could use configurators but for one field seems overkill
+
+            if (fullServersConfigXml != null)
+            {
+                Xpp3Dom persistDecryptionInMemoryXml = fullServersConfigXml.getChild("persistDecryptionInMemory");
+                if (persistDecryptionInMemoryXml != null && persistDecryptionInMemoryXml.getValue() != null)
+                    config.setPersistDecryptionInMemory(Boolean.parseBoolean(persistDecryptionInMemoryXml.getValue()));
+            }
+        }
+
+        return config;
+
+    }
+
+    private void performAdditionalDecryption(Collection<? extends Server> servers, Collection<? super SettingsProblem> problems)
+    {
+        for (Server server : servers)
+        {
             String serverId = server.getId();
             performDecryption(serverId, "username", server::getUsername, server::setUsername, problems);
             performDecryption(serverId, "password", server::getPassword, server::setPassword, problems);
@@ -96,6 +127,21 @@ public class FullServersSettingsDecrypter extends DefaultSettingsDecrypter
                 problems.add(new DefaultSettingsProblem("Failed to decrypt " + propertyName + " for server " + serverId
                                                         + ": " + e.getMessage(), SettingsProblem.Severity.ERROR, "server: " + serverId, -1, -1, e ) );
             }
+        }
+    }
+
+    private static class ServerConfiguration
+    {
+        private boolean persistDecryptionInMemory;
+
+        public boolean isPersistDecryptionInMemory()
+        {
+            return persistDecryptionInMemory;
+        }
+
+        public void setPersistDecryptionInMemory(boolean persistDecryptionInMemory)
+        {
+            this.persistDecryptionInMemory = persistDecryptionInMemory;
         }
     }
 }

@@ -7,7 +7,7 @@
 
     <name>Full Servers Decryption Extension Testing Project</name>
     <description>
-        Use the extension for loading password for a custom repository.
+        Use the extension for loading password and encrypted header for a custom repository.
     </description>
 
     <properties>

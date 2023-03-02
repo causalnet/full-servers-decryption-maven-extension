@@ -20,6 +20,21 @@
                 </httpHeaders>
             </configuration>
         </server>
+
+        <server>
+            <id>theFileServer</id>
+            <!-- theuser -->
+            <username>{QkIYOMfRMn4Hq7pPWjn3xnwt/vTpROj5n4H26IH9agQ=}</username>
+            <!-- thepassword -->
+            <password>{EObV8XZA4koHsufCpGMmjy1SlPt9D0aGjN6O+xq/Y+Q=}</password>
+
+            <configuration>
+                <!-- Persist decryption in memory so that download plugin can see it -->
+                <fullServersDecryption>
+                    <persistDecryptionInMemory>true</persistDecryptionInMemory>
+                </fullServersDecryption>
+            </configuration>
+        </server>
     </servers>
 
     <profiles>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!--
+    Needed to subvert Maven's default behaviour of blocking http, which we use for testing.
+    This is accessed through a proxy anyway so this URL is never hit directly.
+    -->
+    <mirrors>
+        <mirror>
+            <id>security-test-proxied-repo</id>
+            <mirrorOf>security-test-proxied-repo</mirrorOf>
+            <url>http://my-fake-maven-repo.example.com:24680/</url>
+        </mirror>
+    </mirrors>
+
+    <proxies>
+        <proxy>
+            <id>wiremock-proxy</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>127.0.0.1</host>
+            <port>8081</port>
+            <!-- Really only want to proxy our stuff, leave the standard Maven repo alone -->
+            <nonProxyHosts>*.maven.apache.org</nonProxyHosts>
+
+            <!-- Must match the base64 encoded username/password in the wiremock mapping wrong-proxy-auth checker -->
+            <!-- Maven supports decrypting password out-of-the-box but not username so this will only work if our extension is doing its job -->
+
+            <!-- proxyuser -->
+            <username>{d4L0HKd9fAQHnbcD49E5xffcuMsTcO7X8HyfPM7UmXU=}</username>
+            <!-- abc123 -->
+            <password>{o6QKjS7F5CgH13ML/5oqUSzE/7Muc38+ZqyrKYPUZck=}</password>
+        </proxy>
+    </proxies>
+
+    <servers>
+        <server>
+            <id>security-test-proxied-repo</id>
+            <!-- theuser -->
+            <username>{QkIYOMfRMn4Hq7pPWjn3xnwt/vTpROj5n4H26IH9agQ=}</username>
+            <!-- thepassword -->
+            <password>{EObV8XZA4koHsufCpGMmjy1SlPt9D0aGjN6O+xq/Y+Q=}</password>
+            <configuration>
+                <httpHeaders>
+                    <property>
+                        <name>My-Auth-Token</name>
+                        <!-- theauthtoken -->
+                        <value>{nEJsVa63CW4HX22CWhj+xklNxrhtceGJC6B6pubztCw=}</value>
+                    </property>
+                </httpHeaders>
+            </configuration>
+        </server>
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>it-repo</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>local.central</id>
+                    <url>@localRepositoryUrl@</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>local.central</id>
+                    <url>@localRepositoryUrl@</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+</settings>

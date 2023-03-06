@@ -22,21 +22,22 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component(role = SettingsDecrypter.class)
-public class FullServersSettingsDecrypter extends DefaultSettingsDecrypter
+public class FullServersSettingsDecrypter implements SettingsDecrypter
 {
     private final SecDispatcher secDispatcher;
+    private final DefaultSettingsDecrypter defaultSettingsDecrypter;
 
     @Inject
-    public FullServersSettingsDecrypter(@Named("maven") SecDispatcher securityDispatcher)
+    public FullServersSettingsDecrypter(@Named("maven") SecDispatcher securityDispatcher, DefaultSettingsDecrypter defaultSettingsDecrypter)
     {
-        super(securityDispatcher);
         this.secDispatcher = securityDispatcher;
+        this.defaultSettingsDecrypter = defaultSettingsDecrypter;
     }
 
     @Override
     public SettingsDecryptionResult decrypt(SettingsDecryptionRequest request)
     {
-        SettingsDecryptionResult result =  super.decrypt(request);
+        SettingsDecryptionResult result =  defaultSettingsDecrypter.decrypt(request);
         performFullServerDecryption(result.getServers(), result.getProblems());
         performFullProxyDecryption(result.getProxies(), result.getProblems());
 

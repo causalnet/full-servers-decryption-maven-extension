@@ -37,7 +37,6 @@ public class FullServersSettingsDecrypter extends DefaultSettingsDecrypter
     public SettingsDecryptionResult decrypt(SettingsDecryptionRequest request)
     {
         SettingsDecryptionResult result =  super.decrypt(request);
-        //TODO ability to save bits of servers to properties based on server configuration
         performFullServerDecryption(result.getServers(), result.getProblems());
         performFullProxyDecryption(result.getProxies(), result.getProblems());
 

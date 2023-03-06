@@ -2,20 +2,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>au.net.causal.maven.plugins.full-servers-decryption-maven-extension.it</groupId>
-    <artifactId>custom-repo-by-class-path-lib-maven-multiversion</artifactId>
+    <artifactId>custom-repo-by-class-path-lib-maven-latest</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <name>Full Servers Decryption Extension Testing Project</name>
     <description>
-        Use the extension for loading password and encrypted header for a custom repository, testing with multiple different Maven versions.
+        Use the extension for loading password and encrypted header for a custom repository, testing with latest available Maven version.
     </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- This is overridden by invoker.properties to generate a unique file name for each Maven version being tested -->
-        <testDataFileName>testdata.txt</testDataFileName>
+        <!-- Gets replaced with latest Maven release after running versions:update-properties -->
+        <maven.version>3.9.0</maven.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${maven.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <!--
     A custom repository that hits wiremock that has our dependency file.
@@ -34,6 +43,20 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-wrapper-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <mavenVersion>${maven.version}</mavenVersion>
+                </configuration>
+            </plugin>
+
             <!--
             Wiremock will set up a fake server with authentication that will act as a Maven repository that the dependency
             plugin will download a text file artifact from.
@@ -79,8 +102,7 @@
                 <executions>
                     <execution>
                         <id>purge-test-data-from-local-repo</id>
-                        <!-- Run this every time to ensure we re-download -->
-                        <phase>generate-test-resources</phase>
+                        <phase>clean</phase>
                         <goals>
                             <goal>purge-local-repository</goal>
                         </goals>
@@ -103,7 +125,7 @@
                                     <artifactId>test-data</artifactId>
                                     <version>1.0</version>
                                     <type>txt</type>
-                                    <destFileName>${testDataFileName}</destFileName>
+                                    <destFileName>testdata.txt</destFileName>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.build.directory}/deps</outputDirectory>
